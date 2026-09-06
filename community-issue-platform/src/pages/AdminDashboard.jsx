@@ -3,6 +3,44 @@ import { useState } from "react";
 
 function AdminDashboard() {
     const [selectedIssue, setSelectedIssue] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("All");
+    const [issues, setIssues] = useState([
+    {
+      id: 1,
+      title: "Garbage not collected",
+      location: "Kuvempunagar",
+      status: "Pending",
+      assignedTo: "Sanitation Department",
+      description: "Garbage has not been collected for several days."
+    },
+    {
+      id: 2,
+      title: "Street light not working",
+      location: "Vijayanagar",
+      status: "In Progress",
+      assignedTo: "Electical Department",
+      description: "The street light has not been working properly."
+    },
+    {
+      id: 3,
+      title: "Road damage",
+      location: "Hebbal",
+      status: "Resolved",
+      assignedTo: "Road Maintanance Department",
+      description: "The road is damaged and needs repair."
+    }
+  ]);
+  const filteredIssues = issues.filter((issue) => {
+  const matchesSearch =
+    issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    issue.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "All" || issue.status === statusFilter;
+
+  return matchesSearch && matchesStatus;
+});
   return (
     <div className="admin-dashboard">
 
@@ -35,6 +73,27 @@ function AdminDashboard() {
           <p>
             Manage and monitor community issues from here.
           </p>
+          <div className="search-filter">
+
+  <input
+    type="text"
+    placeholder="Search issues..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+
+  <select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+>
+  <option value="All">All Status</option>
+  <option value="Pending">Pending</option>
+  <option value="In Progress">In Progress</option>
+  <option value="Resolved">Resolved</option>
+  <option value="Rejected">Rejected</option>
+</select>
+
+</div>
 
           {/* Statistics Cards */}
           <div className="stats-container">
@@ -77,69 +136,28 @@ function AdminDashboard() {
                 </tr>
               </thead>
 
-              <tbody>
 
-                <tr>
-                  <td>Garbage not collected</td>
-                  <td>Kuvempunagar</td>
-                  <td>Pending</td>
-                  <td>
-                    <button
-  onClick={() =>
-    setSelectedIssue({
-      title: "Garbage not collected",
-      location: "Kuvempunagar",
-      status: "Pending",
-      description: "Garbage has not been collected for several days."
-    })
-  }
->
-  View
-</button>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>Street light not working</td>
-                  <td>Vijayanagar</td>
-                  <td>In Progress</td>
-                  <td>
-                    <button
-  onClick={() =>
-    setSelectedIssue({
-      title: "Street light not working",
-      location: "Vijayanagar",
-      status: "In Progress",
-      description: "The street light has not been working properly."
-    })
-  }
->
-  View
-</button>
-                  </td>
-                </tr>
-
-                <tr>
-                  <td>Road damage</td>
-                  <td>Hebbal</td>
-                  <td>Resolved</td>
-                  <td>
-                    <button
-  onClick={() =>
-    setSelectedIssue({
-      title: "Road damage",
-      location: "Hebbal",
-      status: "Resolved",
-      description: "The road is damaged and needs repair."
-    })
-  }
->
-  View
-</button>
-                  </td>
-                </tr>
-
-              </tbody>
+                <tbody>
+  {filteredIssues.map((issue) => (
+    <tr key={issue.id}>
+      <td>{issue.title}</td>
+      <td>{issue.location}</td>
+      <td>
+  <span className={`status ${issue.status.toLowerCase().replace(" ", "-")}`}>
+    {issue.status}
+  </span>
+</td>
+      <td>
+        <button
+          onClick={() => setSelectedIssue(issue)}
+        >
+          View
+        </button>
+      </td>
+    </tr>
+  ))}
+</tbody>
+              
 
             </table>
 
@@ -155,18 +173,67 @@ function AdminDashboard() {
     <p>
       <strong>Location:</strong> {selectedIssue.location}
     </p>
+    <p>
+  <strong>Assigned To:</strong>
+
+  <select
+    value={selectedIssue.assignedTo}
+    onChange={(e) => {
+      const newDepartment = e.target.value;
+
+      setSelectedIssue({
+        ...selectedIssue,
+        assignedTo: newDepartment
+      });
+
+      setIssues(
+        issues.map((issue) =>
+          issue.id === selectedIssue.id
+            ? { ...issue, assignedTo: newDepartment }
+            : issue
+        )
+      );
+    }}
+  >
+    <option value="Sanitation Department">
+      Sanitation Department
+    </option>
+
+    <option value="Electrical Department">
+      Electrical Department
+    </option>
+
+    <option value="Road Maintenance Department">
+      Road Maintenance Department
+    </option>
+
+    <option value="Water Department">
+      Water Department
+    </option>
+  </select>
+</p>
 
     <p>
   <strong>Status:</strong>
 
   <select
     value={selectedIssue.status}
-    onChange={(e) =>
-      setSelectedIssue({
-        ...selectedIssue,
-        status: e.target.value
-      })
-    }
+    onChange={(e) => {
+  const newStatus = e.target.value;
+
+  setSelectedIssue({
+    ...selectedIssue,
+    status: newStatus
+  });
+
+  setIssues(
+    issues.map((issue) =>
+      issue.id === selectedIssue.id
+        ? { ...issue, status: newStatus }
+        : issue
+    )
+  );
+}}
   >
     <option value="Pending">Pending</option>
     <option value="In Progress">In Progress</option>
