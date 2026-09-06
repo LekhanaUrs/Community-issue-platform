@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 
 function AdminDashboard() {
@@ -103,7 +104,18 @@ function AdminDashboard() {
                   <td>Vijayanagar</td>
                   <td>In Progress</td>
                   <td>
-                    <button>View</button>
+                    <button
+  onClick={() =>
+    setSelectedIssue({
+      title: "Street light not working",
+      location: "Vijayanagar",
+      status: "In Progress",
+      description: "The street light has not been working properly."
+    })
+  }
+>
+  View
+</button>
                   </td>
                 </tr>
 
@@ -112,7 +124,18 @@ function AdminDashboard() {
                   <td>Hebbal</td>
                   <td>Resolved</td>
                   <td>
-                    <button>View</button>
+                    <button
+  onClick={() =>
+    setSelectedIssue({
+      title: "Road damage",
+      location: "Hebbal",
+      status: "Resolved",
+      description: "The road is damaged and needs repair."
+    })
+  }
+>
+  View
+</button>
                   </td>
                 </tr>
 
@@ -134,8 +157,23 @@ function AdminDashboard() {
     </p>
 
     <p>
-      <strong>Status:</strong> {selectedIssue.status}
-    </p>
+  <strong>Status:</strong>
+
+  <select
+    value={selectedIssue.status}
+    onChange={(e) =>
+      setSelectedIssue({
+        ...selectedIssue,
+        status: e.target.value
+      })
+    }
+  >
+    <option value="Pending">Pending</option>
+    <option value="In Progress">In Progress</option>
+    <option value="Resolved">Resolved</option>
+    <option value="Rejected">Rejected</option>
+  </select>
+</p>
 
     <p>
       <strong>Description:</strong> {selectedIssue.description}
