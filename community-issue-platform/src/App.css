@@ -182,3 +182,221 @@
     border-right-color: var(--border);
   }
 }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f5f8;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Header */
+
+header {
+  background: #1e3a5f;
+  color: white;
+  text-align: center;
+  padding: 25px;
+}
+
+header h1 {
+  font-size: 30px;
+}
+
+header p {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+/* Authentication */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px 20px;
+}
+
+.auth-box {
+  width: 420px;
+  max-width: 100%;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+/* Tabs */
+
+.tabs {
+  display: flex;
+  margin-bottom: 30px;
+}
+
+.tabs button {
+  width: 50%;
+  padding: 12px;
+  border: none;
+  background: #eee;
+  color: #333;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.tabs button.active {
+  background: #1e3a5f;
+  color: white;
+}
+
+/* Form */
+
+form h2 {
+  text-align: center;
+  color: #1e3a5f;
+  margin-bottom: 8px;
+}
+
+.description {
+  text-align: center;
+  color: #777;
+  margin-bottom: 20px;
+}
+
+label {
+  display: block;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  font-weight: bold;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #1e3a5f;
+}
+
+/* Submit button */
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  margin-top: 25px;
+  background: #1e3a5f;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background: #162d49;
+}
+
+/* Switch Login/Register */
+
+.switch {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
+}
+
+.switch span {
+  color: #1e3a5f;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Mobile */
+
+@media (max-width: 500px) {
+
+  .auth-container {
+    padding: 30px 15px;
+  }
+
+  .auth-box {
+    padding: 20px;
+  }
+
+  header h1 {
+    font-size: 25px;
+  }
+}
+.issues-page {
+  min-height: 100vh;
+  background: #f2f5f8;
+}
+
+.issues-container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 40px auto;
+}
+
+.issues-container h2 {
+  text-align: center;
+  color: #1e3a5f;
+  margin-bottom: 25px;
+}
+
+.issues-list {
+  display: grid;
+  gap: 20px;
+}
+
+.issue-card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+}
+
+.issue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.issue-header h3 {
+  color: #1e3a5f;
+}
+
+.issue-card p {
+  margin: 10px 0;
+  color: #555;
+}
+
+.status {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.no-issues {
+  background: white;
+  padding: 40px;
+  text-align: center;
+  border-radius: 10px;
+}
