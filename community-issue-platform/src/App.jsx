@@ -1,25 +1,27 @@
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+
+import Login from "./pages/Login";
+import ReportIssue from "./pages/reportissue";
+import ViewIssues from "./pages/viewissues";
 
 function App() {
   return (
-    <div className="app">
-      <header>
-        <h1>Community Connect</h1>
-        <p>Report. Track. Resolve.</p>
-      </header>
+    <BrowserRouter>
+      <Routes>
 
-      <main>
-        <h2>Make Your Community Better</h2>
+        {/* Login + Registration */}
+        <Route path="/" element={<Login />} />
 
-        <p>
-          Report problems in your area and help create a cleaner,
-          safer and better community.
-        </p>
+        <Route path="/login" element={<Login />} />
 
-        <button>Report an Issue</button>
-      </main>
-    </div>
-  )
+        {/* Report Issue */}
+        <Route path="/report-issue" element={<ReportIssue />} />
+
+        <Route path="/view-issues" element={<ViewIssues />}/>
+
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
