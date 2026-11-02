@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserManagement from "./UserManagement";
 
 function AdminDashboard() {
@@ -6,65 +6,70 @@ function AdminDashboard() {
   const [activePage, setActivePage] = useState("dashboard");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [issues, setIssues] = useState([]);
 
-  const [issues, setIssues] = useState([
-    {
-      id: 1,
-      title: "Garbage not collected",
-      location: "Kuvempunagar",
-      status: "Pending",
-      department: "Sanitation Department",
-      reportedBy: "Rahul",
-      date: "02 Oct 2026",
-      description:
-        "Garbage has not been collected from the area for the past few days. This is causing an unpleasant smell and creating hygiene problems for residents.",
-    },
-    {
-      id: 2,
-      title: "Street light not working",
-      location: "Vijayanagar",
-      status: "In Progress",
-      department: "Electrical Department",
-      reportedBy: "Priya",
-      date: "01 Oct 2026",
-      description:
-        "The street light near the main road is not working at night. Residents are facing difficulty while travelling through this area.",
-    },
-    {
-      id: 3,
-      title: "Road damage",
-      location: "Hebbal",
-      status: "Resolved",
-      department: "Road Maintenance Department",
-      reportedBy: "Arjun",
-      date: "28 Sep 2026",
-      description:
-        "There is a damaged portion of the road which was causing difficulty for vehicles and pedestrians.",
-    },
-  ]);
+  // Load issues saved by the Report Issue page.
+  useEffect(() => {
+    try {
+      const savedIssues = JSON.parse(
+        localStorage.getItem("communityIssues") || "[]"
+      );
+
+      setIssues(Array.isArray(savedIssues) ? savedIssues : []);
+    } catch (error) {
+      console.error("Unable to load community issues:", error);
+      setIssues([]);
+    }
+  }, []);
+
+  // Save updated issues to localStorage.
+  const saveIssues = (updatedIssues) => {
+    setIssues(updatedIssues);
+
+    localStorage.setItem(
+      "communityIssues",
+      JSON.stringify(updatedIssues)
+    );
+  };
 
   const filteredIssues = issues.filter((issue) => {
+    const title = (issue.title || "").toLowerCase();
+    const location = (issue.location || "").toLowerCase();
+
     const matchesSearch =
-      issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      issue.location.toLowerCase().includes(searchTerm.toLowerCase());
+      title.includes(searchTerm.toLowerCase()) ||
+      location.includes(searchTerm.toLowerCase());
 
     const matchesStatus =
       statusFilter === "All" || issue.status === statusFilter;
 
-    return matchesSearch && matchesStatus;
+    const matchesPage =
+      activePage === "pending"
+        ? issue.status === "Pending"
+        : activePage === "in-progress"
+        ? issue.status === "In Progress"
+        : activePage === "resolved"
+        ? issue.status === "Resolved"
+        : true;
+
+    return matchesSearch && matchesStatus && matchesPage;
   });
 
   const totalIssues = issues.length;
+
   const pendingIssues = issues.filter(
     (issue) => issue.status === "Pending"
   ).length;
+
   const inProgressIssues = issues.filter(
     (issue) => issue.status === "In Progress"
   ).length;
+
   const resolvedIssues = issues.filter(
     (issue) => issue.status === "Resolved"
   ).length;
 
+  // Update issue status and save it.
   const changeStatus = (newStatus) => {
     if (!selectedIssue) return;
 
@@ -73,15 +78,15 @@ function AdminDashboard() {
       status: newStatus,
     };
 
-    setIssues((currentIssues) =>
-      currentIssues.map((issue) =>
-        issue.id === selectedIssue.id ? updatedIssue : issue
-      )
+    const updatedIssues = issues.map((issue) =>
+      issue.id === selectedIssue.id ? updatedIssue : issue
     );
 
+    saveIssues(updatedIssues);
     setSelectedIssue(updatedIssue);
   };
 
+  // Update department and save it.
   const changeDepartment = (newDepartment) => {
     if (!selectedIssue) return;
 
@@ -90,12 +95,11 @@ function AdminDashboard() {
       department: newDepartment,
     };
 
-    setIssues((currentIssues) =>
-      currentIssues.map((issue) =>
-        issue.id === selectedIssue.id ? updatedIssue : issue
-      )
+    const updatedIssues = issues.map((issue) =>
+      issue.id === selectedIssue.id ? updatedIssue : issue
     );
 
+    saveIssues(updatedIssues);
     setSelectedIssue(updatedIssue);
   };
 
@@ -119,10 +123,13 @@ function AdminDashboard() {
 
         <nav className="sidebar-nav">
           <button
-            className={activePage === "dashboard" ? "nav-item active" : "nav-item"}
+            className={
+              activePage === "dashboard" ? "nav-item active" : "nav-item"
+            }
             onClick={() => {
               setActivePage("dashboard");
               setSelectedIssue(null);
+              setStatusFilter("All");
             }}
           >
             🏠 Dashboard
@@ -140,11 +147,13 @@ function AdminDashboard() {
           </button>
 
           <button
-            className={activePage === "pending" ? "nav-item active" : "nav-item"}
+            className={
+              activePage === "pending" ? "nav-item active" : "nav-item"
+            }
             onClick={() => {
               setActivePage("pending");
               setSelectedIssue(null);
-              setStatusFilter("Pending");
+              setStatusFilter("All");
             }}
           >
             ⏳ Pending Issues
@@ -159,7 +168,7 @@ function AdminDashboard() {
             onClick={() => {
               setActivePage("in-progress");
               setSelectedIssue(null);
-              setStatusFilter("In Progress");
+              setStatusFilter("All");
             }}
           >
             🔄 In Progress
@@ -172,7 +181,7 @@ function AdminDashboard() {
             onClick={() => {
               setActivePage("resolved");
               setSelectedIssue(null);
-              setStatusFilter("Resolved");
+              setStatusFilter("All");
             }}
           >
             ✅ Resolved Issues
@@ -346,7 +355,7 @@ function AdminDashboard() {
 
                           <td>{issue.location}</td>
 
-                          <td>{issue.department}</td>
+                          <td>{issue.department || "Not assigned"}</td>
 
                           <td>
                             <span className={getStatusClass(issue.status)}>
@@ -370,7 +379,7 @@ function AdminDashboard() {
               )}
             </section>
 
-            {/* Issue Details */}
+            {/* Issue Details Modal */}
             {selectedIssue && (
               <div className="modal-overlay">
                 <div className="issue-modal">
@@ -396,39 +405,36 @@ function AdminDashboard() {
 
                     <div className="detail-item">
                       <span>📅 Reported Date</span>
-                      <strong>{selectedIssue.date}</strong>
+                      <strong>{selectedIssue.date || "Not available"}</strong>
                     </div>
 
                     <div className="detail-item">
                       <span>👤 Reported By</span>
-                      <strong>{selectedIssue.reportedBy}</strong>
+                      <strong>{selectedIssue.reportedBy || "Not available"}</strong>
                     </div>
 
                     <div className="detail-item">
                       <span>🏢 Department</span>
 
                       <select
-                        value={selectedIssue.department}
+                        value={selectedIssue.department || ""}
                         onChange={(event) =>
                           changeDepartment(event.target.value)
                         }
                       >
+                        <option value="">Not assigned</option>
                         <option value="Sanitation Department">
                           Sanitation Department
                         </option>
-
                         <option value="Electrical Department">
                           Electrical Department
                         </option>
-
                         <option value="Road Maintenance Department">
                           Road Maintenance Department
                         </option>
-
                         <option value="Water Supply Department">
                           Water Supply Department
                         </option>
-
                         <option value="Public Works Department">
                           Public Works Department
                         </option>
@@ -439,7 +445,7 @@ function AdminDashboard() {
                       <span>🔄 Current Status</span>
 
                       <select
-                        value={selectedIssue.status}
+                        value={selectedIssue.status || "Pending"}
                         onChange={(event) =>
                           changeStatus(event.target.value)
                         }
@@ -454,7 +460,7 @@ function AdminDashboard() {
 
                   <div className="description-section">
                     <h3>Issue Description</h3>
-                    <p>{selectedIssue.description}</p>
+                    <p>{selectedIssue.description || "No description provided."}</p>
                   </div>
 
                   <div className="modal-footer">
